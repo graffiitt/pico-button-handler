@@ -2,9 +2,6 @@
 
 struct Button button[4];
 
-bool lastState[] = {1, 1, 1, 1};
-int32_t timePress[4];
-
 void settingButton(const Button *bt)
 {
     gpio_init(bt->numberPin);
@@ -28,20 +25,35 @@ void handlerButton(bool state, Button *bt)
     {
         bt->flag = 0;
         printf("pressed long %d %d \n", bt->numberPin, deltaTime);
+        if (bt->handlerLongPress)
+            bt->handlerLongPress();
     }
     if ((state && !bt->lastState) && (deltaTime < LONG_PRESS_TIME))
     {
-
         printf("pressed short %d %d \n", bt->numberPin, deltaTime);
+        bt->handlerShortPress();
     }
     bt->lastState = state;
+}
+
+void setButtonHandlerShort(uint8_t numButton, void (*fncHandler)())
+{
+    if (numButton > 4)
+        return;
+    button[numButton].handlerShortPress = fncHandler;
+}
+
+void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)())
+{
+    if (numButton > 4)
+        return;
+    button[numButton].handlerLongPress = fncHandler;
 }
 
 void alarmIrq()
 {
     // set timer for next irq
     hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
-    printf("Alarm IRQ  pin state: %d\n", gpio_get(6));
     timer_hw->alarm[ALARM_NUM] = timer_hw->timerawl + TIMER_DELAY;
 
     bool state[] = {

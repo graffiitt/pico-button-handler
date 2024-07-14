@@ -19,6 +19,8 @@
 
 struct Button
 {
+    void (*handlerShortPress)(void);
+    void (*handlerLongPress)(void);
     bool flag;
     int numberPin;
     bool lastState;
@@ -27,6 +29,8 @@ struct Button
 
 void settingButton(const Button *bt);
 void handlerButton(bool state, Button *bt);
+void setButtonHandlerShort(uint8_t numButton, void (*fncHandler)());
+void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)());
 void alarmIrq();
 void buttonHandlerInit();
 
