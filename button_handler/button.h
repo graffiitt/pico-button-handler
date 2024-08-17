@@ -12,10 +12,8 @@
 #define BUTTON_3 8
 #define BUTTON_4 9
 
-#define LONG_PRESS_TIME 3000000 // 3 sec
-#define TIMER_DELAY 250000  // 250 ms
-#define ALARM_NUM 0
-#define ALARM_IRQ TIMER_IRQ_0
+ #define REQUEST_HZ 150000           // 250 ms
+#define COUNTER_LONG_PRESS 20
 
 struct Button
 {
@@ -24,14 +22,15 @@ struct Button
     bool flag;
     int numberPin;
     bool lastState;
+    uint32_t counterPress;
     uint32_t timePress; // timestamp when button was pressed
 };
 
-void settingButton(const Button *bt);
-void handlerButton(bool state, Button *bt);
+void settingButton(const struct Button *bt);
+void handlerButton(const bool state, struct Button *bt);
 void setButtonHandlerShort(uint8_t numButton, void (*fncHandler)());
 void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)());
-void alarmIrq();
+bool buttonIrq(repeating_timer_t *rt);
 void buttonHandlerInit();
 
 #endif

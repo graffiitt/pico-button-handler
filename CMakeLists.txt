@@ -1,42 +1,37 @@
 cmake_minimum_required(VERSION 3.12)
 set(PICO_BOARD pico_w)
-include(pico_sdk_import.cmake)
+set(FREERTOS_KERNEL_PATH /Users/vlad/programming/pico/FreeRTOS-Kernel)
 
-project(button_handler C CXX ASM)
-set(CMAKE_C_STANDARD 11)
+include(pico_sdk_import.cmake)
+include(FreeRTOS_Kernel_import.cmake)
+
+project(button C CXX ASM)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_BUILD_TYPE Release)
 
 pico_sdk_init()
 
-file(GLOB CPPFILE "button_handler/*.cpp")
-
-message("Adding ${PROJECT_NAME} CPP files: " )
-foreach(source ${CPPFILE})
-    message("  - " ${source})
-endforeach(source)
-
-
-file(GLOB HFILE "button_handler/*.h")
-
-message("Adding ${PROJECT_NAME} H files: " )
-foreach(source ${HFILE})
-    message("  - " ${source})
-endforeach(source)
 add_executable(${PROJECT_NAME}
-main.cpp
-${CPPFILE}
-${HFILE}
+main.c
 )
 
+add_subdirectory(button_handler)
 target_link_libraries(${PROJECT_NAME}
-    pico_stdlib
-     
-    )
+button_handler
+FreeRTOS-Kernel-Heap4
+pico_stdlib
+pico_cyw43_arch_none
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
-    )
+    ${CMAKE_CURRENT_LIST_DIR}/button_handler
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    configNUMBER_OF_CORES=1
+)
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 0)
