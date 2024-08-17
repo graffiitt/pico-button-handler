@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.12)
-project(button_handler)
+set(TARGET_NAME button_handler)
 
 message("Adding ${PROJECT_NAME} C files: " )
 file(GLOB CPPFILE "*.c")
@@ -14,13 +14,17 @@ foreach(source ${HFILE})
 endforeach(source)
  
 
-add_library(${PROJECT_NAME} STATIC
+add_library(${TARGET_NAME} STATIC
 ${CPPFILE}
 ${HFILE}
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_NAME}
 pico_stdlib
+FreeRTOS-Kernel-Heap4
 )
 
+target_include_directories(${TARGET_NAME} PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/..
+)
  

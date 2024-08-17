@@ -12,25 +12,23 @@
 #define BUTTON_3 8
 #define BUTTON_4 9
 
- #define REQUEST_HZ 150000           // 250 ms
-#define COUNTER_LONG_PRESS 20
+#define UPDATE_BUTTONS_TIME 50 // in ticks sheduler
+#define TIME_PRESS_LONG 3000000
+#define TIME_PRESS_SHORT 500000
 
 struct Button
 {
-    void (*handlerShortPress)(void);
-    void (*handlerLongPress)(void);
     bool flag;
     int numberPin;
     bool lastState;
-    uint32_t counterPress;
     uint32_t timePress; // timestamp when button was pressed
+
+    void (*handlerShortPress)(void);
+    void (*handlerLongPress)(void);
 };
 
-void settingButton(const struct Button *bt);
-void handlerButton(const bool state, struct Button *bt);
+void buttonHandlerInit();
 void setButtonHandlerShort(uint8_t numButton, void (*fncHandler)());
 void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)());
-bool buttonIrq(repeating_timer_t *rt);
-void buttonHandlerInit();
 
 #endif

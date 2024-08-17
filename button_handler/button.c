@@ -1,7 +1,13 @@
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
+
 #include "button.h"
 
 struct Button button[4];
 repeating_timer_t _timerButton;
+
+static void handlerButton(bool const state, struct Button *bt);
 
 void settingButton(const struct Button *bt)
 {
@@ -24,12 +30,8 @@ void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)())
     button[numButton].handlerLongPress = fncHandler;
 }
 
-bool buttonIrq(repeating_timer_t *rt)
+bool buttonIrq(TimerHandle_t *pxTimer)
 {
-    // set timer for next irq
-    // hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
-    // timer_hw->alarm[ALARM_NUM] = timer_hw->timerawl + TIMER_DELAY;
-
     bool state[] = {
         gpio_get(BUTTON_1),
         gpio_get(BUTTON_2),
@@ -44,24 +46,21 @@ bool buttonIrq(repeating_timer_t *rt)
     return true;
 }
 
-void handlerButton(const bool state, struct Button *bt)
+static void handlerButton(bool const state, struct Button *bt)
 {
-    if (!state)
-        bt->counterPress++;
-
     if ((!state) && bt->lastState) // fix pressed
     {
-        bt->counterPress = 0;
+        bt->timePress = time_us_32();
         bt->flag = 1;
     }
     if (!(state && bt->lastState) &&
-        (bt->counterPress > COUNTER_LONG_PRESS) && bt->flag)
+        ((time_us_32() - bt->timePress) > TIME_PRESS_LONG) && bt->flag)
     {
         bt->flag = 0;
         if (bt->handlerLongPress)
             bt->handlerLongPress();
     }
-    if ((state && !bt->lastState) && (bt->counterPress < COUNTER_LONG_PRESS))
+    if ((state && !bt->lastState) && ((time_us_32() - bt->timePress) < TIME_PRESS_LONG))
     {
         if (bt->handlerShortPress)
             bt->handlerShortPress();
@@ -81,5 +80,7 @@ void buttonHandlerInit()
         settingButton(&button[i]);
     }
 
-    add_repeating_timer_us(-REQUEST_HZ, buttonIrq, NULL, &_timerButton);
+    TimerHandle_t buttonHandler;
+    buttonHandler = xTimerCreate("buttonTimer", UPDATE_BUTTONS_TIME, pdTRUE, (void *)buttonHandler, (TimerCallbackFunction_t)buttonIrq);
+    xTimerStart(buttonHandler, 1000);
 }
