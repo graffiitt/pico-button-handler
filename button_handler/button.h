@@ -1,11 +1,8 @@
 #ifndef BUTTON_HANDLER_H
 #define BUTTON_HANDLER_H
 
-#include <string.h>
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "hardware/timer.h"
-#include "hardware/irq.h"
+#define BUTTON_TASK_PRIORITY (tskIDLE_PRIORITY + 2UL)
+#define BUTTON_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 
 #define BUTTON_1 6
 #define BUTTON_2 7

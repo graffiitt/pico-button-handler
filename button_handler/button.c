@@ -1,6 +1,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
-#include "timers.h"
+
+#include <string.h>
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include "hardware/timer.h"
+#include "hardware/irq.h"
 
 #include "button.h"
 
@@ -30,20 +35,23 @@ void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)())
     button[numButton].handlerLongPress = fncHandler;
 }
 
-bool buttonIrq(TimerHandle_t *pxTimer)
+void buttonTask(__unused void *params)
 {
-    bool state[] = {
-        gpio_get(BUTTON_1),
-        gpio_get(BUTTON_2),
-        gpio_get(BUTTON_3),
-        gpio_get(BUTTON_4),
-    };
+    while (true)
+    {
+        bool state[] = {
+            gpio_get(BUTTON_1),
+            gpio_get(BUTTON_2),
+            gpio_get(BUTTON_3),
+            gpio_get(BUTTON_4),
+        };
 
-    if (3 > (state[0] + state[1] + state[2] + state[3]))
-        return true;
-    for (int i = 0; i < 4; i++)
-        handlerButton(state[i], &button[i]);
-    return true;
+        if (3 > (state[0] + state[1] + state[2] + state[3]))
+            return;
+        for (int i = 0; i < 4; i++)
+            handlerButton(state[i], &button[i]);
+        vTaskDelay(50);
+    }
 }
 
 static void handlerButton(bool const state, struct Button *bt)
@@ -80,7 +88,5 @@ void buttonHandlerInit()
         settingButton(&button[i]);
     }
 
-    TimerHandle_t buttonHandler;
-    buttonHandler = xTimerCreate("buttonTimer", UPDATE_BUTTONS_TIME, pdTRUE, (void *)buttonHandler, (TimerCallbackFunction_t)buttonIrq);
-    xTimerStart(buttonHandler, 1000);
+    xTaskCreate(buttonTask, "buttonTask", BUTTON_TASK_STACK_SIZE, NULL, BUTTON_TASK_PRIORITY, NULL);
 }
