@@ -13,7 +13,6 @@ foreach(source ${HFILE})
     message("  - " ${source})
 endforeach(source)
  
-
 add_library(${TARGET_NAME} STATIC
 ${CPPFILE}
 ${HFILE}
@@ -25,6 +24,6 @@ FreeRTOS-Kernel-Heap4
 )
 
 target_include_directories(${TARGET_NAME} PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/..
+    ${CONFIG_PATH_FREERTOS} 
 )
  

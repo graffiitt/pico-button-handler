@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}
 main.c
 )
 
+set(CONFIG_PATH_FREERTOS ${CMAKE_CURRENT_LIST_DIR})
 add_subdirectory(button_handler)
 target_link_libraries(${PROJECT_NAME}
 button_handler
@@ -32,6 +33,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     configNUMBER_OF_CORES=1
 )
+
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 0)
