@@ -23,7 +23,8 @@ pico_stdlib
 FreeRTOS-Kernel-Heap4
 )
 
-target_include_directories(${TARGET_NAME} PRIVATE
+target_include_directories(${TARGET_NAME} PUBLIC
     ${CONFIG_PATH_FREERTOS} 
+    ${CMAKE_CURRENT_LIST_DIR}
 )
  
