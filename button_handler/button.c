@@ -37,6 +37,17 @@ void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)())
 
 void buttonTask(__unused void *params)
 {
+    button[0].numberPin = BUTTON_1;
+    button[1].numberPin = BUTTON_2;
+    button[2].numberPin = BUTTON_3;
+    button[3].numberPin = BUTTON_4;
+
+    for (int i = 0; i < 4; i++)
+    {
+        settingButton(&button[i]);
+        button[i].lastState = gpio_get(button[i].numberPin);
+    }
+    
     while (true)
     {
         bool state[] = {
@@ -50,7 +61,7 @@ void buttonTask(__unused void *params)
             return;
         for (int i = 0; i < 4; i++)
             handlerButton(state[i], &button[i]);
-        vTaskDelay(50);
+        vTaskDelay(UPDATE_BUTTONS_TIME);
     }
 }
 
@@ -78,15 +89,6 @@ static void handlerButton(bool const state, struct Button *bt)
 
 void buttonHandlerInit()
 {
-    button[0].numberPin = BUTTON_1;
-    button[1].numberPin = BUTTON_2;
-    button[2].numberPin = BUTTON_3;
-    button[3].numberPin = BUTTON_4;
-
-    for (int i = 0; i < 4; i++)
-    {
-        settingButton(&button[i]);
-    }
 
     xTaskCreate(buttonTask, "buttonTask", BUTTON_TASK_STACK_SIZE, NULL, BUTTON_TASK_PRIORITY, NULL);
 }
