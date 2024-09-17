@@ -47,7 +47,7 @@ void buttonTask(__unused void *params)
         settingButton(&button[i]);
         button[i].lastState = gpio_get(button[i].numberPin);
     }
-    
+
     while (true)
     {
         bool state[] = {
@@ -57,11 +57,16 @@ void buttonTask(__unused void *params)
             gpio_get(BUTTON_4),
         };
 
-        if (3 > (state[0] + state[1] + state[2] + state[3]))
-            return;
-        for (int i = 0; i < 4; i++)
-            handlerButton(state[i], &button[i]);
-        vTaskDelay(UPDATE_BUTTONS_TIME);
+        if ((state[0] + state[1] + state[2] + state[3]) > 1)
+        {
+            for (int i = 0; i < 4; i++)
+                handlerButton(state[i], &button[i]);
+            vTaskDelay(UPDATE_BUTTONS_TIME);
+        }
+        else
+        {
+            taskYIELD();
+        }
     }
 }
 
