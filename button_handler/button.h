@@ -1,31 +1,38 @@
 #ifndef BUTTON_HANDLER_H
 #define BUTTON_HANDLER_H
 
-#define BUTTON_TASK_PRIORITY (tskIDLE_PRIORITY + 4UL)
-#define BUTTON_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
-
 #define BUTTON_1 6
 #define BUTTON_2 7
 #define BUTTON_3 8
 #define BUTTON_4 9
 
+#define NUMBER_BUTTONS 4
+
 #define UPDATE_BUTTONS_TIME 50 // in ticks sheduler
-#define TIME_PRESS_LONG 3000000
+#define TIME_PRESS_LONG 2000000
 #define TIME_PRESS_SHORT 500000
 
-struct Button
+enum BUTTON_ACTION
 {
-    bool flag;
-    int numberPin;
-    bool lastState;
-    uint32_t timePress; // timestamp when button was pressed
-
-    void (*handlerShortPress)(void);
-    void (*handlerLongPress)(void);
+    push,
+    release,
+    holding
 };
 
-void buttonHandlerInit();
-void setButtonHandlerShort(uint8_t numButton, void (*fncHandler)());
-void setButtonHandlerLong(uint8_t numButton, void (*fncHandler)());
+typedef void (*button_handler)(enum BUTTON_ACTION);
+
+typedef struct
+{
+    int input_pin;
+    bool last_state;
+    bool flag;
+    uint32_t timePress; // timestamp when button was pressed
+
+    button_handler bt_handler;
+} button_cfg_t;
+
+void buttonTask(__unused void *params);
+
+bool setButtonHandler(int number, button_handler handler);
 
 #endif
