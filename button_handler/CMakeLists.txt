@@ -13,17 +13,19 @@ foreach(source ${HFILE})
     message("  - " ${source})
 endforeach(source)
  
-add_library(${TARGET_NAME} STATIC
+add_library(${TARGET_NAME} INTERFACE)
+
+target_sources(${TARGET_NAME} INTERFACE
 ${CPPFILE}
 ${HFILE}
 )
 
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} INTERFACE
 pico_stdlib
 FreeRTOS-Kernel-Heap4
 )
 
-target_include_directories(${TARGET_NAME} PUBLIC
+target_include_directories(${TARGET_NAME} INTERFACE
     ${CONFIG_PATH_FREERTOS} 
     ${CMAKE_CURRENT_LIST_DIR}
 )
