@@ -26,7 +26,7 @@ FreeRTOS-Kernel-Heap4
 )
 
 target_include_directories(${TARGET_NAME} INTERFACE
-    ${CONFIG_PATH_FREERTOS} 
+
     ${CMAKE_CURRENT_LIST_DIR}
 )
  

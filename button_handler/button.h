@@ -1,6 +1,9 @@
 #ifndef BUTTON_HANDLER_H
 #define BUTTON_HANDLER_H
 
+#include <stdio.h>
+#include "pico/stdlib.h"
+
 #define BUTTON_1 6
 #define BUTTON_2 7
 #define BUTTON_3 8

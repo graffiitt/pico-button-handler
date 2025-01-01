@@ -2,7 +2,6 @@
 #include "task.h"
 
 #include <string.h>
-#include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/timer.h"
 
