@@ -17,9 +17,9 @@
 
 enum BUTTON_ACTION
 {
-    push,
-    release,
-    holding
+    PUSH,
+    SHORT,
+    HOLDING
 };
 
 typedef void (*button_handler)(enum BUTTON_ACTION);

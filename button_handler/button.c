@@ -23,7 +23,7 @@ static void handlerButton(bool const state, button_cfg_t *bt)
         bt->timePress = time_us_32();
         bt->flag = 1;
         if (bt->bt_handler)
-            bt->bt_handler(push);
+            bt->bt_handler(PUSH);
     }
 
     if (!(state && bt->last_state) &&
@@ -31,13 +31,13 @@ static void handlerButton(bool const state, button_cfg_t *bt)
     {
         bt->flag = 0;
         if (bt->bt_handler)
-            bt->bt_handler(holding);
+            bt->bt_handler(HOLDING);
     }
 
     if ((state && !bt->last_state) && ((time_us_32() - bt->timePress) < TIME_PRESS_LONG))
     {
         if (bt->bt_handler)
-            bt->bt_handler(release);
+            bt->bt_handler(SHORT);
     }
     bt->last_state = state;
 }
